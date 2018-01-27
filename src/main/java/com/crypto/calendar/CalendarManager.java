@@ -11,6 +11,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -135,7 +136,7 @@ public class CalendarManager {
             for (UpcomingIco upcomingIco : upcomingIcos) {
                 String projectName = upcomingIco.getProjectName();
 
-                if (futureEventTitles.stream().anyMatch(title -> title.contains(projectName))) {
+                if (futureEventTitles.stream().anyMatch(title -> title.toLowerCase().contains(projectName.toLowerCase()))) {
                     logger.info("Event already exists for {}", projectName);
                     continue;
                 }
@@ -143,16 +144,17 @@ public class CalendarManager {
                 try {
                     // Assign the appropriate dates including the year
                     String dateWithYear = upcomingIco.getStartDate() + " " + DateUtils.findSubsequentYear(upcomingIco.getStartDate());
-                    DateTime startDate = formatter.parseDateTime(dateWithYear);
+                    LocalDate startDate = formatter.parseLocalDate(dateWithYear);
+
                     com.google.api.client.util.DateTime eventStartDate = new com.google.api.client.util.DateTime(startDate.toString());
                     EventDateTime start = new EventDateTime()
-                            .setDateTime(eventStartDate)
+                            .setDate(eventStartDate)
                             .setTimeZone(this.TIMEZONE);
 
-                    DateTime endDate = startDate.plusDays(1);
+                    LocalDate endDate = startDate.plusDays(1);
                     com.google.api.client.util.DateTime eventEndDate = new com.google.api.client.util.DateTime(endDate.toString());
                     EventDateTime end = new EventDateTime()
-                            .setDateTime(eventEndDate)
+                            .setDate(eventEndDate)
                             .setTimeZone(this.TIMEZONE);
 
                     String description = String.format(
