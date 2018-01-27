@@ -1,0 +1,16 @@
+**.DS_Store
+
+## IntelliJ files
+.idea/
+
+## Build files
+target/
+
+## Java class files
+*.class
+
+**/resources/*.properties
+**/resources/*.json
+
+## Google Calendar credentials
+.credentials/
