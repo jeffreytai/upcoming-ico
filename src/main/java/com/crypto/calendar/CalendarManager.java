@@ -76,7 +76,6 @@ public class CalendarManager {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
     public void addEvents(Collection<UpcomingIco> upcomingIcos) {
@@ -121,7 +120,7 @@ public class CalendarManager {
                                     Date formattedStart = sdf.parse(start);
                                     return formattedStart.after(today);
                                 } catch (ParseException | NullPointerException ex) {
-                                    logger.error(item.getStart().toString());
+                                    logger.info("{} cannot be parsed", item.getStart().toString());
                                 }
                                 return false;
                             })
@@ -179,7 +178,7 @@ public class CalendarManager {
 
                     newEntries.add(projectName);
                 } catch (IllegalArgumentException ex) {
-                    logger.info("Error creating event for {}", projectName);
+                    logger.info("Error creating event for {} - {}", projectName, ex.getLocalizedMessage());
                     continue;
                 }
             }
@@ -203,6 +202,7 @@ public class CalendarManager {
                     "Calendar events for the following ICOs have been added: %s",
                     String.join(", ", entries));
 
+            logger.info(message);
             slack.sendMessage(message);
         }
 
