@@ -5,6 +5,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -16,12 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 public class GoogleCalendarAuthentication {
 
@@ -74,19 +76,9 @@ public class GoogleCalendarAuthentication {
     private static final String PROPERTIES_FILE = "client_secret.json";
 
     /**
-     * Name of file for basic authentication
+     * File name that contains the service account credentials
      */
-    private static final String CREDENTIALS_FILE = "google.properties";
-
-    /**
-     * Client ID for basic authentication
-     */
-    private static String CLIENT_ID = "";
-
-    /**
-     * Client secret for basic authentication
-     */
-    private static String CLIENT_SECRET = "";
+    private static final String SERVICE_ACCOUNT_FILE = "service-account.json";
 
     /**
      * Google sheets service
@@ -103,20 +95,20 @@ public class GoogleCalendarAuthentication {
         }
     }
 
-    public GoogleCalendarAuthentication() {
-        try {
-            Properties props = new Properties();
-            props.load(new InputStreamReader(GoogleCalendarAuthentication.class.getClassLoader().getResourceAsStream(CREDENTIALS_FILE)));
-
-            CLIENT_ID = props.getProperty("client-id");
-            CLIENT_SECRET = props.getProperty("client-secret");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
+    public GoogleCalendarAuthentication() {}
 
     public static Calendar getCalendarService() throws IOException {
+        /**
+         * Use this if the Google account can be changed to a different domain
+         */
+//        InputStream stream = GoogleCalendarAuthentication.class.getClassLoader().getResourceAsStream(SERVICE_ACCOUNT_FILE);
+//
+//        GoogleCredential credential = GoogleCredential.fromStream(stream).createScoped(Collections.singleton(CalendarScopes.CALENDAR));
+//        calendar = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+//                .setApplicationName(APPLICATION_NAME)
+//                .build();
+
+
         Credential credential = authorize();
         calendar = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
